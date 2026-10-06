@@ -20,13 +20,15 @@
    return {config:c,eligible,matches,n:matches.length,dry,probability:matches.length?dry/matches.length:null,baseline,interval:wilson(dry,matches.length),meanOutcome:mean(matches.map(r=>r.target.anomaly)),sequence:matches.length?matches[0].sequence.map((r,i)=>({...r,label:MONTHS[r.month],value:mean(matches.map(m=>m.sequence[i].value))})):[],splits:[['Før 1991',matches.filter(r=>r.year<1991)],['Fra 1991',matches.filter(r=>r.year>=1991)]].map(([name,rs])=>({name,n:rs.length,p:rs.length?rs.filter(r=>r.dry).length/rs.length:null}))}
   }
   function history(){const ref=reference(2021,'fixed'),out=[];for(const [i]of data){const p=period(i-11,12,ref);if(p)out.push({index:i,value:p.anomaly,label:label(i)})}return out}
+  const rainDays=new Map(rows.map(r=>[index(...r.month.split('-').map(Number)),r.rainDays??null]));
   function annual(year,month=0){
    const ref=reference(2021,'fixed');
-   const months=Array.from({length:12},(_,i)=>({month:i+1,actual:data.get(index(year,i+1))??null,normal:ref[i]}));
+   const months=Array.from({length:12},(_,i)=>({month:i+1,actual:data.get(index(year,i+1))??null,rainDays:rainDays.get(index(year,i+1))??null,normal:ref[i]}));
    const selected=months.filter(m=>(!month||m.month===month)&&m.actual!==null);
    const actual=selected.length?selected.reduce((s,m)=>s+m.actual,0):null;
    const normal=selected.length?selected.reduce((s,m)=>s+m.normal,0):null;
-   return {year,month,months,availableMonths:selected.map(m=>m.month),count:selected.length,actual,normal,
+   const rainy=selected.length&&selected.every(m=>m.rainDays!==null)?selected.reduce((s,m)=>s+m.rainDays,0):null;
+   return {year,month,months,rainDays:rainy,availableMonths:selected.map(m=>m.month),count:selected.length,actual,normal,
     difference:actual===null?null:actual-normal,percent:actual===null?null:100*(actual/normal-1),complete:selected.length===(month?1:12)};
   }
   function rollingAverage(year,month,window){
