@@ -29,7 +29,20 @@
    return {year,month,months,availableMonths:selected.map(m=>m.month),count:selected.length,actual,normal,
     difference:actual===null?null:actual-normal,percent:actual===null?null:100*(actual/normal-1),complete:selected.length===(month?1:12)};
   }
-  return {analyze,history,reference,period,data,annual};
+  function rollingAverage(year,month,window){
+   if(![10,30].includes(window))throw Error('Window must be 10 or 30 years');
+   const a=annual(year,month),start=year-window,end=year-1;
+   if(!a.count)return {start,end,count:0,average:null,difference:null,percent:null};
+   const totals=[];
+   for(let y=start;y<=end;y++){
+    const values=a.availableMonths.map(m=>data.get(index(y,m)));
+    if(values.every(v=>v!==undefined))totals.push(values.reduce((s,v)=>s+v,0));
+   }
+   const average=totals.length===window?mean(totals):null;
+   return {start,end,count:totals.length,average,difference:average===null?null:a.actual-average,
+    percent:average===null||average===0?null:100*(a.actual/average-1)};
+  }
+  return {analyze,history,reference,period,data,annual,rollingAverage};
  }
  root.RainModel={createModel,presets,MONTHS,label,index,date,wilson};
  if(typeof module!=='undefined')module.exports=root.RainModel;
