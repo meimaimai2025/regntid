@@ -1,0 +1,13 @@
+[build]
+  command = "node scripts/build-netlify.mjs"
+  publish = ".netlify/publish"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache"
+    X-Content-Type-Options = "nosniff"
