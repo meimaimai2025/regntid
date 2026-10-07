@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {createCalendarRecords,isoWeek}=require('../dist/calendar-records-model.js');
+const ctx={window:{}};for(const f of ['data','records-data'])vm.runInNewContext(fs.readFileSync(__dirname+'/../dist/'+f+'.js','utf8'),ctx);
+const r=createCalendarRecords(ctx.window.RAIN_DATA,ctx.window.RECORD_DATA);
+assert.equal(r.leaders.day.value,891);assert.equal(r.leaders.day.holders[0].end,'2026-10-05');
+const oct5=r.days.find(d=>d.key==='10-05');assert.equal(oct5.status,'broken');assert.equal(oct5.record.value,501);assert.equal(oct5.record.holders[0].end,'2022-10-05');
+assert.equal(r.broken.length,9);assert.ok(r.broken.every(d=>d.current.end.startsWith('2026-')));
+assert.equal(r.days.length,366);assert.equal(r.months.length,12);assert.equal(r.weeks.length,53);
+assert.equal(r.days.find(d=>d.key==='02-29').existsThisYear,false);assert.equal(r.days.find(d=>d.key==='12-31').current,null);
+assert.equal(r.months[9].current.complete,false);assert.equal(r.weeks[40].current.complete,false);assert.equal(r.weeks[41].current,null);
+assert.equal(isoWeek('2026-01-01').year,2026);assert.equal(isoWeek('2026-01-01').week,1);assert.equal(isoWeek('2027-01-01').year,2026);assert.equal(isoWeek('2027-01-01').week,53);assert.equal(isoWeek('2025-12-28').week,52);
+const sample={first:'2024-01-01',last:'2026-01-08',dailyTenths:[['2024-01-01',50],['2025-01-01',50],['2026-01-01',50],['2026-01-02',80],['2026-01-03',null],['2026-01-04',40],['2026-01-05',10],['2026-01-06',10],['2026-01-07',10],['2026-01-08',10]]};
+const t=createCalendarRecords([],sample);assert.equal(t.days[0].status,'tied');assert.equal(t.days[0].record.holders.length,2);assert.equal(t.days[1].status,'no-history');assert.equal(t.months[0].current,null);assert.equal(t.leaders.rolling,null);assert.ok(!t.broken.some(d=>d.key==='01-01'));
+console.log('Passed calendar records: current-year leaders, historical date records, ISO week boundaries, leap day, ties, missing data, ongoing periods and achievements.');
