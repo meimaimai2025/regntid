@@ -1,6 +1,6 @@
 'use strict';
 (()=>{
- const model=window.RecordModel.createRecords(window.RAIN_DATA,window.RECORD_DATA),months=['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];
+ let model=window.RecordModel.createRecords(window.RAIN_DATA,window.RECORD_DATA); const months=['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];
  const el=id=>document.getElementById(id),date=d=>new Date(d+'T00:00:00Z').toLocaleDateString('nb-NO',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
  const num=(n,unit)=>n===null?'—':(unit==='mm'?n/10:n).toLocaleString('nb-NO',{maximumFractionDigits:unit==='mm'?1:0});
  const value=(n,unit)=>num(n,unit)+(n===null?'':' '+unit);
@@ -22,8 +22,14 @@
   const candidates=cards.filter(c=>c.current!==null&&c.record&&c.current>0&&c.current<c.record.value&&!(c.id==='month'&&c.complete)&&!(c.id==='wetDays'&&c.record.value+1-c.current>Math.round((Date.parse(model.year+'-12-31T00:00:00Z')-Date.parse(model.last+'T00:00:00Z'))/86400000)));candidates.sort((a,b)=>b.current/b.record.value-a.current/a.record.value);
   el('recordHighlight').textContent=candidates.length?`${candidates[0].title}: ${Math.round(candidates[0].current/candidates[0].record.value*100)} % av rekordtallet er nådd. Avstand til tangering: ${value(candidates[0].record.value-candidates[0].current,candidates[0].unit)}. Dette er fremdrift, ikke en prognose.`:'Rekordjakten starter med neste måling.';
  }
- el('recordUpdated').textContent='Siste døgnmåling: '+date(model.last)+' · Kilden sjekket '+date(model.source.checkedOn);
- el('recordFreshness').textContent='Status ved siste tilgjengelige måling, ikke direktevær. Ingen målinger etter '+date(model.last)+' er tatt med. Måneds- og årssummer inkluderer de målte dagene i den pågående måneden.';
+ function freshness(){
+ const recent=model.source.dailyTenths.slice(-7);
+ el('recentRainRows').innerHTML=recent.map(([d,v])=>`<tr><td>${date(d)}</td><td>${value(v,'mm')}</td><td>${v===null?'Mangler måling':v>=10?'Ja':'Nei'}</td></tr>`).join('');
+ el('recordUpdated').textContent='Siste måledøgn: '+date(model.last)+' · MET Frost · Slutter kl. 06 UTC';
+ el('recordFreshness').textContent='Målt nedbør, ikke værvarsel. Datoen gjelder døgnets slutt kl. 06 UTC (kl. 08 ved sommertid, kl. 07 ved vintertid). Måned og år inkluderer alle tilgjengelige måledøgn. Nye målinger hentes ved åpning.';
+ }
+ window.addEventListener('frost-updated',()=>{model=window.RecordModel.createRecords(window.RAIN_DATA,window.RECORD_DATA);freshness();render()});
+ freshness();
  months.forEach((m,i)=>el('recordMonth').add(new Option(m[0].toUpperCase()+m.slice(1),i+1)));el('recordMonth').value=model.currentMonth;el('recordMonth').onchange=render;
  render();
 })();

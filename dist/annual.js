@@ -2,7 +2,7 @@
 (()=>{
 const el=id=>document.getElementById(id),months=['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'];
 const years=[...new Set(window.RAIN_DATA.map(r=>Number(r.month.slice(0,4))))].sort((a,b)=>b-a),latest=years[0];
-const model=window.RainModel.createModel(window.RAIN_DATA);let expanded=false;
+let model=window.RainModel.createModel(window.RAIN_DATA);let expanded=false;
 const number=n=>n===null?'—':n.toLocaleString('nb-NO',{minimumFractionDigits:1,maximumFractionDigits:1});
 const days=n=>n===null?'—':n.toLocaleString('nb-NO');
 const signed=n=>n===null?'—':(n>=0?'+':'−')+number(Math.abs(n));
@@ -23,6 +23,7 @@ const deviationCell=x=>`<td class="${x.percent===null?'muted':x.percent>=0?'posi
 el('annualYearRows').innerHTML=list.map(y=>{const a=model.annual(y,month),ten=model.rollingAverage(y,month,10),thirty=model.rollingAverage(y,month,30);return `<tr${y===year?' class="selected-month"':''}><td><button data-year="${y}">${y}</button>${y<1896?' <span class="small muted">Foreløpig</span>':''}</td><td><strong>${number(a.actual)}${a.actual===null?'':' mm'}</strong><div class="small muted">${a.count?period(a):'Ikke tilgjengelig'}${!a.complete&&a.count?' · delår':''}</div></td><td>${days(a.rainDays)}</td>${averageCell(ten)}${deviationCell(ten)}${averageCell(thirty)}${deviationCell(thirty)}<td>${number(a.normal)}${a.normal===null?'':' mm'}<div class="small ${a.percent>=0?'positive':'negative'}">${a.percent===null?'—':signed(a.percent)+' %'}</div></td></tr>`}).join('');
 el('annualYearRows').querySelectorAll('button').forEach(b=>b.onclick=()=>{el('annualYear').value=b.dataset.year;render();el('annual').scrollIntoView({behavior:'smooth'})});el('annualAllYears').textContent=expanded?'Vis de 30 nyeste årene':'Vis alle '+years.length+' år';
 }
+window.addEventListener('frost-updated',()=>{model=window.RainModel.createModel(window.RAIN_DATA);render()});
 function changeYear(direction){const position=years.indexOf(+el('annualYear').value),next=years[position-direction];if(next===undefined)return;el('annualYear').value=String(next);render()}
 el('annualPreviousYear').onclick=()=>changeYear(-1);el('annualNextYear').onclick=()=>changeYear(1);
 years.forEach(y=>el('annualYear').add(new Option(y,y)));months.forEach((m,i)=>el('annualMonth').add(new Option(m,i+1)));el('annualYear').value=latest;el('annualYear').onchange=render;el('annualMonth').onchange=render;el('annualAllYears').onclick=()=>{expanded=!expanded;render()};render();
