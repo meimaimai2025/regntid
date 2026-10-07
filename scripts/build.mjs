@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import './prerender-records.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.csv':'text/csv; charset=utf-8'};
 const assets={};
