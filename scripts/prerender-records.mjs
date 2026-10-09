@@ -9,13 +9,13 @@ const document={getElementById(id){
 }};
 const window={addEventListener(){}};
 const context=vm.createContext({window,document,Date,Intl});
-for(const file of ['data.js','records-data.js','calendar-records-model.js','calendar-records.js','dry-records-model.js','dry-records.js']){
+for(const file of ['data.js','records-data.js','calendar-records-model.js','calendar-records.js','dry-records-model.js','dry-records.js','recent-days.js']){
  vm.runInContext(fs.readFileSync(path.join(root,'dist',file),'utf8'),context);
 }
 const filename=path.join(root,'dist/index.html');
 let html=fs.readFileSync(filename,'utf8');
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-for(const [id,property] of [['yearLeaders','innerHTML'],['yearSpotlight','textContent'],['yearBrokenRows','innerHTML'],['yearBrokenCount','textContent'],['yearLeadersTitle','textContent'],['yearBrokenTitle','textContent'],['dryRecordsContent','innerHTML']]){
+for(const [id,property] of [['yearLeaders','innerHTML'],['yearSpotlight','textContent'],['yearBrokenRows','innerHTML'],['yearBrokenCount','textContent'],['yearLeadersTitle','textContent'],['yearBrokenTitle','textContent'],['dryRecordsContent','innerHTML'],['recentDaysCards','innerHTML'],['recentDaysStatus','textContent']]){
  const start=`<!--snapshot:${id}-->`,end=`<!--/snapshot:${id}-->`;
  const value=property==='innerHTML'?elements.get(id)[property]:escape(elements.get(id)[property]);
  if(html.includes(start)){

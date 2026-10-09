@@ -6,7 +6,7 @@ const r=create(ctx.window.RAIN_DATA,ctx.window.RECORD_DATA);
 assert.equal(r.leaders.month.value,659);
 assert.equal(r.leaders.month.holders[0].key,'04');
 assert.equal(r.leaders.day.value,0);
-assert.equal(r.leaders.day.holders.length,90);
+assert.equal(r.leaders.day.holders.length,91);
 assert.equal(r.leaders.week.value,0);
 assert.equal(r.leaders.week.holders.length,3);
 assert.equal(r.streak.leader.value,24);

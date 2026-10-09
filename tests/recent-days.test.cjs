@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+(async()=>{
+ const elements=new Map(),listeners=new Map();let requests=0,fail=false;
+ const document={getElementById(id){if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:''});return elements.get(id)}};
+ const window={RECORD_DATA:{first:'2026-10-05',last:'2026-10-07',dailyTenths:[['2026-10-05',891],['2026-10-06',null],['2026-10-07',132]]},RAIN_DATA:[],addEventListener(type,fn){const list=listeners.get(type)||[];list.push(fn);listeners.set(type,list)},dispatchEvent(event){for(const fn of listeners.get(event.type)||[])fn(event)}};
+ const context=vm.createContext({window,document,Date,Map,CustomEvent:class{constructor(type){this.type=type}},fetch:async(url,options)=>{requests++;assert.equal(url,'/api/recent-rain');assert.equal(options.cache,'no-store');if(fail)throw Error('offline');return {ok:true,json:async()=>({first:'2026-10-08',last:'2026-10-09',dailyTenths:[['2026-10-08',23],['2026-10-09',0]],fetchedAt:'2026-10-09T10:00:00Z'})}}});
+ vm.runInContext(fs.readFileSync(__dirname+'/../dist/recent-days.js','utf8'),context);
+ const old=document.getElementById('recentDaysCards').innerHTML;
+ assert.ok(old.indexOf('07. oktober')<old.indexOf('06. oktober'));
+ assert.ok(old.includes('Måling mangler'));
+ assert.ok(old.includes('13,2 mm'));
+ vm.runInContext(fs.readFileSync(__dirname+'/../dist/frost-live.js','utf8'),context);
+ await new Promise(setImmediate);
+ assert.equal(requests,1);
+ const html=document.getElementById('recentDaysCards').innerHTML;
+ assert.ok(html.indexOf('09. oktober')<html.indexOf('08. oktober'));
+ assert.ok(html.includes('0 mm'));assert.ok(html.includes('2,3 mm'));
+ assert.equal((html.match(/<article/g)||[]).length,3);
+ assert.equal(document.getElementById('frostStatus').textContent,document.getElementById('recentDaysStatus').textContent);
+ window.dispatchEvent({type:'pageshow',persisted:true});await new Promise(setImmediate);assert.equal(requests,2);
+ fail=true;await document.getElementById('recentDaysRefresh').onclick();
+ assert.equal(document.getElementById('recentDaysCards').innerHTML,html);
+ assert.ok(document.getElementById('recentDaysStatus').textContent.includes('2026-10-09'));
+ console.log('Passed recent days: newest first, zero vs missing, automatic fetching, Safari history restore and dated fallback.');
+})().catch(error=>{console.error(error);process.exitCode=1});

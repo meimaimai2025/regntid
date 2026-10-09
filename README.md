@@ -19,4 +19,8 @@ Historikk følger med som JavaScript-datafiler; nettstedet bruker ingen lokal da
 
 ## Kontroll
 
-`node --test tests/calendar-records.test.cjs tests/dry-records.test.cjs tests/frost.test.mjs`
+`node --test tests/*.cjs tests/*.mjs`
+
+## Siste tre måledøgn
+
+De tre siste kalenderdatoene til siste tilgjengelige måledøgn vises øverst, nyeste først. Datoer uten måling merkes tydelig og blir aldri 0 mm. Nye Frost-data hentes uten mellomlager ved åpning, ved gjenoppretting fra nettleserhistorikken og via oppdateringsknappen. Ved kildefeil beholdes en datert, synlig snapshot. Datoen er døgnets slutt kl. 06 UTC.

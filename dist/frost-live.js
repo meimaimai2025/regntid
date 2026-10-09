@@ -19,11 +19,15 @@
   window.RAIN_DATA=monthlyFromDaily(window.RAIN_DATA,window.RECORD_DATA);
   window.dispatchEvent(new CustomEvent('frost-updated'));
  };
- const status=document.getElementById('frostStatus');
+ const status=document.getElementById('frostStatus'),recentStatus=document.getElementById('recentDaysStatus');
+ let loading=false;
+ const setStatus=text=>{status.textContent=text;recentStatus.textContent=text};
  async function update(){
-  status.textContent='Henter ferske målinger fra Meteorologisk institutt …';
-  try{const response=await fetch('/api/recent-rain',{cache:'no-store'});if(!response.ok)throw Error();const data=await response.json();if(!data.dailyTenths?.length||!data.last)throw Error();window.applyFrostRecent(data);status.textContent='Tilkoblet MET Frost · Sist hentet '+new Date(data.fetchedAt).toLocaleString('nb-NO',{timeZone:'Europe/Oslo'})+' · Nye målinger sjekkes ved åpning, med opptil 30 minutters mellomlagring.'}
-  catch{status.textContent='Nye målinger kunne ikke hentes akkurat nå. Viser lagrede Frost-målinger til '+window.RECORD_DATA.last+'. Prøv «Hent siste målinger» igjen.'}
+  if(loading)return;loading=true;
+  setStatus('Henter ferske målinger fra Meteorologisk institutt …');
+  try{const response=await fetch('/api/recent-rain',{cache:'no-store'});if(!response.ok)throw Error();const data=await response.json();if(!data.dailyTenths?.length||!data.last)throw Error();window.applyFrostRecent(data);setStatus('Tilkoblet MET Frost · Sist hentet '+new Date(data.fetchedAt).toLocaleString('nb-NO',{timeZone:'Europe/Oslo'})+' · Nye målinger hentes hver gang siden åpnes.')}
+  catch{setStatus('Nye målinger kunne ikke hentes akkurat nå. Viser lagrede Frost-målinger til '+window.RECORD_DATA.last+'. Prøv «Hent siste målinger» igjen.')}finally{loading=false}
  }
- document.getElementById('frostRefresh').onclick=update;update();
+ document.getElementById('frostRefresh').onclick=update;document.getElementById('recentDaysRefresh').onclick=update;
+ window.addEventListener('pageshow',event=>{if(event.persisted)update()});update();
 })();

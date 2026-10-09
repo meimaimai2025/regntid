@@ -11,5 +11,5 @@ const recent=await fetchRecent('test-credential',now,async(url,options)=>{
  assert.equal(url.hostname,'frost.met.no');assert.ok(!url.href.includes('test-credential'));assert.equal(options.headers.Authorization,'Basic '+btoa('test-credential:'));
  return {ok:true,json:async()=>({data:[row('2026-10-07',13.2)]})};
 });assert.equal(recent.first,'2026-01-01');assert.equal(recent.dailyTenths[0][1],null);
-const snapshot=JSON.parse(fs.readFileSync(new URL('../dist/records-data.js',import.meta.url),'utf8').slice('window.RECORD_DATA='.length,-2));assert.equal(snapshot.source,'https://frost.met.no/');assert.equal(snapshot.last,'2026-10-07');
+const snapshot=JSON.parse(fs.readFileSync(new URL('../dist/records-data.js',import.meta.url),'utf8').slice('window.RECORD_DATA='.length,-2));assert.equal(snapshot.source,'https://frost.met.no/');assert.equal(snapshot.last,'2026-10-09');
 console.log('Passed Frost parsing: missing days, quality filters, trace values, sensor/offset selection, future dates, duplicates, auth and complete-year coverage.');
