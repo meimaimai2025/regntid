@@ -2,13 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 const root=path.resolve(import.meta.dirname,'..');
-for(const city of ['bergen','oslo','stavanger']){
+for(const city of ['bergen','oslo','stavanger','trondheim']){
 const elements=new Map();
 const document={getElementById(id){
  if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:'',value:id==='calendarType'?'day':'',hidden:false,querySelectorAll:()=>[]});
  return elements.get(id);
 }};
-const window={RAIN_CITY:{station:{oslo:'Oslo–Blindern',stavanger:'Sviland (Sandnes)',bergen:'Bergen Florida'}[city]},addEventListener(){}};
+const window={RAIN_CITY:{station:{trondheim:'Trondheim–Voll',oslo:'Oslo–Blindern',stavanger:'Sviland (Sandnes)',bergen:'Bergen Florida'}[city]},addEventListener(){}};
 const context=vm.createContext({window,document,Date,Intl});
 for(const file of ['data.js','records-data.js',...(city!=='bergen'?[city+'-data.js']:[]),'calendar-records-model.js','calendar-records.js','dry-records-model.js','dry-records.js','recent-days.js']){
  vm.runInContext(fs.readFileSync(path.join(root,'dist',file),'utf8'),context);
@@ -29,7 +29,7 @@ for(const [id,property] of [['yearLeaders','innerHTML'],['yearSpotlight','textCo
   html=html.replace(pattern,(_m,open,_tag,close)=>open+start+value+end+close);
  }
 }
-if(city!=='bergen')html=html.replace('<title>Regnrytme · Bergen</title>','<title>Regnrytme · '+({oslo:'Oslo',stavanger:'Stavanger'}[city])+'</title>').replace('<option value="'+city+'">','<option value="'+city+'" selected>');
+if(city!=='bergen')html=html.replace('<title>Regnrytme · Bergen</title>','<title>Regnrytme · '+({trondheim:'Trondheim',oslo:'Oslo',stavanger:'Stavanger'}[city])+'</title>').replace('<option value="'+city+'">','<option value="'+city+'" selected>');
 fs.writeFileSync(city!=='bergen'?path.join(root,'dist',city+'.html'):filename,html);
 console.log('Saved visible record snapshot: '+document.getElementById('yearBrokenCount').textContent);
 

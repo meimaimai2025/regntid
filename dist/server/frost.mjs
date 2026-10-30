@@ -24,7 +24,7 @@ export function parseFrost(payload,now=new Date(),station=STATION){
  return {first,last,dailyTenths,source:'https://frost.met.no/',station:station,timeOffset:'PT6H',fetchedAt:now.toISOString(),checkedOn:now.toISOString().slice(0,10)};
 }
 export async function fetchRecent(clientId,now=new Date(),fetcher=fetch,city='bergen'){
- const station={bergen:'SN50540',oslo:'SN18700',stavanger:'SN44800'}[city];if(!station)throw new Error('Unknown city');
+ const station={bergen:'SN50540',oslo:'SN18700',stavanger:'SN44800',trondheim:'SN68860'}[city];if(!station)throw new Error('Unknown city');
  if(!clientId)throw new Error('Frost is not configured');
  const year=now.getUTCFullYear();
  const url=new URL('https://frost.met.no/observations/v0.jsonld');
