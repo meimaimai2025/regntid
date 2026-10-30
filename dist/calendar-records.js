@@ -20,7 +20,7 @@
   $('calendarTableSummary').textContent='Se alle '+list.length+' '+(type==='day'?'kalenderdatoer (inkl. 29. februar)':type==='month'?'månedsrekorder':'ukerekorder');
  }
  function achievements(){const list=data.broken,visible=expanded?list:list.slice(0,12);
-  $('yearBrokenTitle').textContent='Historiske rekorder slått i '+data.year;
+  $('yearBrokenTitle').textContent='Historiske rekorder slått i '+data.year+' · '+(window.RAIN_CITY?.station||'Bergen Florida');
   $('yearBrokenCount').textContent=list.length?list.length+' rekorder slått · '+data.tied.length+' våte rekorder tangert':'Ingen historiske rekorder er slått i årets tilgjengelige målinger.';
   $('yearBrokenRows').innerHTML=visible.map(r=>`<tr><td><strong>${kind(r)} · ${label(r)}</strong><div class="small muted">${period(r.current)}${r.current.complete?'':' · pågående'}</div></td><td><strong>${mm(r.current.value)}</strong></td><td>${mm(r.record.value)}<div class="small muted">${history(r)}</div></td><td class="positive">+${mm(r.current.value-r.record.value)}</td></tr>`).join('');
   $('yearBrokenTable').hidden=!list.length;$('yearBrokenMore').hidden=list.length<=12;$('yearBrokenMore').textContent=expanded?'Vis de 12 nyeste':'Vis alle '+list.length+' rekorder';

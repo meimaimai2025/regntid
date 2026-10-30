@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const elements=new Map(),listeners=new Map();let requests=0,fail=false;
  const document={getElementById(id){if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:''});return elements.get(id)}};
  const window={RECORD_DATA:{first:'2026-10-05',last:'2026-10-07',dailyTenths:[['2026-10-05',891],['2026-10-06',null],['2026-10-07',132]]},RAIN_DATA:[],addEventListener(type,fn){const list=listeners.get(type)||[];list.push(fn);listeners.set(type,list)},dispatchEvent(event){for(const fn of listeners.get(event.type)||[])fn(event)}};
- const context=vm.createContext({window,document,Date,Map,CustomEvent:class{constructor(type){this.type=type}},fetch:async(url,options)=>{requests++;assert.equal(url,'/api/recent-rain');assert.equal(options.cache,'no-store');if(fail)throw Error('offline');return {ok:true,json:async()=>({first:'2026-10-08',last:'2026-10-09',dailyTenths:[['2026-10-08',23],['2026-10-09',0]],fetchedAt:'2026-10-09T10:00:00Z'})}}});
+ const context=vm.createContext({window,document,Date,Map,CustomEvent:class{constructor(type){this.type=type}},fetch:async(url,options)=>{requests++;assert.equal(url,'/api/recent-rain?city=bergen');assert.equal(options.cache,'no-store');if(fail)throw Error('offline');return {ok:true,json:async()=>({station:'SN50540:0',first:'2026-10-08',last:'2026-10-09',dailyTenths:[['2026-10-08',23],['2026-10-09',0]],fetchedAt:'2026-10-09T10:00:00Z'})}}});
  vm.runInContext(fs.readFileSync(__dirname+'/../dist/recent-days.js','utf8'),context);
  const old=document.getElementById('recentDaysCards').innerHTML;
  assert.ok(old.indexOf('07. oktober')<old.indexOf('06. oktober'));
@@ -12,6 +12,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  vm.runInContext(fs.readFileSync(__dirname+'/../dist/frost-live.js','utf8'),context);
  await new Promise(setImmediate);
  assert.equal(requests,1);
+ assert.throws(()=>window.applyFrostRecent({station:'SN18700:0',last:'2026-10-10'}),/Wrong station/);
  const html=document.getElementById('recentDaysCards').innerHTML;
  assert.ok(html.indexOf('09. oktober')<html.indexOf('08. oktober'));
  assert.ok(html.includes('0 mm'));assert.ok(html.includes('2,3 mm'));

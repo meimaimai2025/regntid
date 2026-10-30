@@ -10,7 +10,7 @@ function createRecords(monthly,source){
   const key=`${year}-${String(month).padStart(2,'0')}`,complete=rows.find(r=>r.month===key),partial=month===currentMonth?span(key+'-01',last):null;
   const current=complete?complete.value:partial?.value??null;
   const record=maxRecord(rows.filter(r=>+r.month.slice(0,4)<year&&+r.month.slice(5,7)===month).map(r=>({value:r.value,start:r.month+'-01',end:r.month})));
-  return mk('month',current,record,{unit:'mm',title:'Våteste måned',month,period:complete?key:partial?key+'-01 / '+last:key,complete:!!complete,coverage:'Månedsserie 1890–'+(year-1),note:month>currentMonth?'Måneden er ikke målt ennå.':complete?'Ferdig måned i '+year+'.':'Måneden så langt; målinger til '+last+'.'});
+  return mk('month',current,record,{unit:'mm',title:'Våteste måned',month,period:complete?key:partial?key+'-01 / '+last:key,complete:!!complete,coverage:'Månedsserie '+monthly[0].month.slice(0,4)+'–'+(year-1),note:month>currentMonth?'Måneden er ikke målt ennå.':complete?'Ferdig måned i '+year+'.':'Måneden så langt; målinger til '+last+'.'});
  }
  const annuals=[];
  for(const y of [...new Set(rows.map(r=>+r.month.slice(0,4)))].filter(y=>y<year)){
@@ -23,7 +23,7 @@ function createRecords(monthly,source){
   else if(r)ytd+=r.value;else yearValid=false;
  }
  const yearDaily=span(year+'-01-01',last),previousDays=source.dailyTenths.filter(([d,v])=>d<last&&v!==null);
- const annualCard=mk('year',yearValid?ytd:null,maxRecord(annuals),{unit:'mm',title:'Våteste år',period:year+'-01-01 / '+last,coverage:'Komplette år 1890–'+(year-1),note:'Hele årsrekorden mot årets nedbør så langt.'});
+ const annualCard=mk('year',yearValid?ytd:null,maxRecord(annuals),{unit:'mm',title:'Våteste år',period:year+'-01-01 / '+last,coverage:'Komplette år '+monthly[0].month.slice(0,4)+'–'+(year-1),note:'Hele årsrekorden mot årets nedbør så langt.'});
  const dayCard=mk('day',daily.get(last)??null,maxRecord(previousDays.map(([d,v])=>({value:v,start:d,end:d}))),{unit:'mm',title:'Våteste døgn',period:last,coverage:'Døgnserie fra '+source.first,note:'Siste målte døgn. Et døgn starter på null; gårsdagens regn tas ikke med.'});
  function streak(wet){
   const qualifies=v=>v!==null&&(wet?v>=10:v<10);
