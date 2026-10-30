@@ -36,7 +36,8 @@ for city,(filename,archive,station,start) in configs.items():
     if daily.get(date) is None and v>=0 and line[i+6]==' ' and line[i+5]!='A':
      daily[date]=v;provenance[date]=dict(date=date,tenths=v,station='Mestad i Oddernes',archive='NOE00100570',method='NOAA_GHCND_NOE00100570',source='https://www.ncei.noaa.gov/pub/data/ghcn/daily/all/NOE00100570.dly')
  for row in supplements.get(city,[]):
-  assert row['station']==station+':0' and start<=row['date']<cutoff
+  assert (row['station'] in ['SN82290:0','SN82310:0'] if city=='bodo' else row['station']==station+':0') and start<=row['date']<cutoff
+  if city=='bodo':assert '2022-01-01'<=row['date']<='2023-12-31' and 0<=row['qualityCode']<=4 and row['timeOffset']=='PT6H'
   assert isinstance(row['tenths'],int) and row['tenths']>=0
   # Fill missing archive days only. Keep original accepted measurements unchanged.
   if daily.get(row['date']) is None:
@@ -56,6 +57,7 @@ for city,(filename,archive,station,start) in configs.items():
  normal=[r for r in monthly if '1991-01'<=r['month']<='2020-12']
  record=dict(first=first,last=last,dailyTenths=[[d,daily.get(d)] for d in dates],source=url,station=station+':0',checkedOn='2026-10-30',fetchedAt='2026-10-30T00:00:00Z',timeOffset='PT6H',supplements=list(provenance.values()))
  if city=='kristiansand':record.update(composite=True,sources=[url,'https://www.ncei.noaa.gov/pub/data/ghcn/daily/all/NOE00100570.dly'])
+ if city=='bodo':record.update(composite=True,sources=[url,'https://frost.met.no/observations/v0.jsonld?sources=SN82290,SN82310'])
  assert len(normal)==360, 'Incomplete climate normal: '+city
  payload=dict(monthly=monthly,daily=record)
  (root/'dist'/f'{city}-data.js').write_text('window.'+city.upper()+'_DATA='+json.dumps(payload,separators=(',',':'))+';\n')
