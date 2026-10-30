@@ -5,8 +5,10 @@ const cities={
  trondheim:{id:'trondheim',name:'Trondheim',station:'Trondheim–Voll',stationId:'SN68860',firstYear:1923,dailyYear:1923,coordinates:'63,41° N · 10,45° Ø',archive:'NOE00111040',snapshot:'29. september 2026'},
  stavanger:{id:'stavanger',name:'Stavanger-området',station:'Sviland (Sandnes)',stationId:'SN44800',firstYear:1895,dailyYear:1895,coordinates:'58,82° N · 5,92° Ø',archive:'NOE00110608',snapshot:'29. september 2026'}
 };
+window.RAIN_CITIES=cities;
+window.RAIN_CITY_DATA={bergen:{monthly:window.RAIN_DATA,daily:window.RECORD_DATA},oslo:window.OSLO_DATA,stavanger:window.STAVANGER_DATA,trondheim:window.TRONDHEIM_DATA};
 const city=cities[new URLSearchParams(location.search).get('city')]||cities.bergen;
 window.RAIN_CITY=city;
-const data={oslo:window.OSLO_DATA,stavanger:window.STAVANGER_DATA,trondheim:window.TRONDHEIM_DATA}[city.id];
+const data=window.RAIN_CITY_DATA[city.id];
 if(data){window.RAIN_DATA=data.monthly;window.RECORD_DATA=data.daily;}
 })();

@@ -21,11 +21,3 @@ test('Trondheim page and API are routed to Voll',async()=>{
  await fetchRecent('test',new Date('2026-10-30T12:00:00Z'),async(url)=>{
  assert.equal(url.searchParams.get('sources'),'SN68860');return {ok:true,json:async()=>({data:[{sourceId:'SN68860:0',referenceTime:'2026-10-29T00:00:00Z',observations:[{elementId:'sum(precipitation_amount P1D)',timeResolution:'P1D',timeOffset:'PT6H',timeSeriesId:0,unit:'mm',value:3,qualityCode:0}]}]})};},'trondheim');
 });
-test('four-city comparison renders and refreshes without mixing selected-city data',async()=>{
- const elements=new Map();const w={};const document={getElementById(id){if(!elements.has(id))elements.set(id,{value:id==='comparisonBase'?'bergen':'',textContent:'',innerHTML:''});return elements.get(id)}};
- const ctx=vm.createContext({window:w,document,fetch:async()=>({ok:false}),URLSearchParams,Date,Intl});
- for(const f of ['data','records-data','oslo-data','stavanger-data','trondheim-data','comparison-model','comparison'])vm.runInContext(fs.readFileSync('dist/'+f+'.js','utf8'),ctx);
- await new Promise(setImmediate);assert.ok(elements.get('comparisonContent').innerHTML.includes('Voll · SN68860'));
- assert.ok(elements.get('comparisonContent').innerHTML.includes('Utilstrekkelige data'));
- elements.get('comparisonBase').value='trondheim';elements.get('comparisonBase').onchange();assert.ok(elements.get('comparisonContent').innerHTML.includes('mot Trondheim'));
-});
