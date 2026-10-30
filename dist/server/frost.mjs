@@ -1,3 +1,4 @@
+export const CITY_STATIONS={bergen:'SN50540',oslo:'SN18700',stavanger:'SN44800',trondheim:'SN68860',kristiansand:'SN39040',tromso:'SN90450',bodo:'SN82290'};
 export const STATION='SN50540:0';
 export const ELEMENT='sum(precipitation_amount P1D)';
 export const nextDate=(d,n=1)=>new Date(Date.parse(d+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
@@ -24,7 +25,7 @@ export function parseFrost(payload,now=new Date(),station=STATION){
  return {first,last,dailyTenths,source:'https://frost.met.no/',station:station,timeOffset:'PT6H',fetchedAt:now.toISOString(),checkedOn:now.toISOString().slice(0,10)};
 }
 export async function fetchRecent(clientId,now=new Date(),fetcher=fetch,city='bergen'){
- const station={bergen:'SN50540',oslo:'SN18700',stavanger:'SN44800',trondheim:'SN68860'}[city];if(!station)throw new Error('Unknown city');
+ const station=Object.hasOwn(CITY_STATIONS,city)?CITY_STATIONS[city]:null;if(!station)throw new Error('Unknown city');
  if(!clientId)throw new Error('Frost is not configured');
  const year=now.getUTCFullYear();
  const url=new URL('https://frost.met.no/observations/v0.jsonld');

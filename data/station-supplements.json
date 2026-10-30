@@ -1,0 +1,12 @@
+{
+  "tromso": [
+    {
+      "station": "SN90450:0",
+      "date": "2007-11-12",
+      "tenths": 0,
+      "method": "MET_Frost_daily_P1D_PT6H_quality_0_to_4",
+      "source": "https://frost.met.no/observations/v0.jsonld?sources=SN90450&referencetime=2007-01-01/2008-01-01&elements=sum(precipitation_amount%20P1D)&timeoffsets=PT6H&qualities=0,1,2,3,4",
+      "checkedOn": "2026-10-30"
+    }
+  ]
+}
