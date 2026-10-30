@@ -8,7 +8,7 @@ const document={getElementById(id){
  if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:'',value:id==='calendarType'?'day':'',hidden:false,querySelectorAll:()=>[]});
  return elements.get(id);
 }};
-const window={RAIN_CITY:{station:{trondheim:'Trondheim–Voll',oslo:'Oslo–Blindern',stavanger:'Sviland (Sandnes)',bergen:'Bergen Florida'}[city]},addEventListener(){}};
+const window={RAIN_CITY:{station:{trondheim:'Trondheim* (sammensatt serie)',oslo:'Oslo–Blindern',stavanger:'Sviland (Sandnes)',bergen:'Bergen Florida'}[city]},addEventListener(){}};
 const context=vm.createContext({window,document,Date,Intl});
 for(const file of ['data.js','records-data.js',...(city!=='bergen'?[city+'-data.js']:[]),'calendar-records-model.js','calendar-records.js','dry-records-model.js','dry-records.js','recent-days.js']){
  vm.runInContext(fs.readFileSync(path.join(root,'dist',file),'utf8'),context);
