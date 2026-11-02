@@ -25,8 +25,8 @@
  const setStatus=text=>{status.textContent=text;recentStatus.textContent=text};
  async function update(){
   if(loading)return;loading=true;
-  setStatus('Henter ferske målinger fra Meteorologisk institutt …');
-  try{const response=await fetch('/api/recent-rain?city='+encodeURIComponent(window.RAIN_CITY?.id||'bergen'),{cache:'no-store'});if(!response.ok)throw Error();const data=await response.json();if(!data.dailyTenths?.length||!data.last)throw Error();window.applyFrostRecent(data);setStatus('Tilkoblet MET Frost · Sist hentet '+new Date(data.fetchedAt).toLocaleString('nb-NO',{timeZone:'Europe/Oslo'})+' · Nye målinger hentes hver gang siden åpnes.')}
+  setStatus('Henter siste tilgjengelige målinger …');
+  try{const response=await fetch('/api/recent-rain?city='+encodeURIComponent(window.RAIN_CITY?.id||'bergen'),{cache:'no-store'});if(!response.ok)throw Error();const data=await response.json();if(!data.dailyTenths?.length||!data.last)throw Error();window.applyFrostRecent(data);setStatus('Tilkoblet MET Frost · Sist hentet '+new Date(data.fetchedAt).toLocaleString('nb-NO',{timeZone:'Europe/Oslo'})+' · Målinger gjenbrukes i opptil én time før neste MET-henting.')}
   catch{setStatus('Nye målinger kunne ikke hentes akkurat nå. Viser lagrede målinger til '+window.RECORD_DATA.last+'. Prøv «Hent siste målinger» igjen.')}finally{loading=false}
  }
  document.getElementById('frostRefresh').onclick=update;document.getElementById('recentDaysRefresh').onclick=update;

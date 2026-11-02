@@ -12,5 +12,6 @@ for(const name of fs.readdirSync(path.join(root,'dist'))){
 const server=path.join(root,'dist/server');fs.mkdirSync(server,{recursive:true});
 fs.writeFileSync(path.join(server,'assets.mjs'),'export const assets='+JSON.stringify(assets)+';\n');
 fs.copyFileSync(path.join(root,'src/frost.mjs'),path.join(server,'frost.mjs'));
+fs.copyFileSync(path.join(root,'src/rain-cache.mjs'),path.join(server,'rain-cache.mjs'));
 fs.copyFileSync(path.join(root,'src/worker.mjs'),path.join(server,'index.js'));
 console.log('Worker built with '+Object.keys(assets).length+' page assets.');

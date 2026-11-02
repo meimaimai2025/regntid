@@ -1,5 +1,6 @@
 import { assets } from './assets.mjs';
-import { fetchRecent, CITY_STATIONS } from './frost.mjs';
+import { CITY_STATIONS } from './frost.mjs';
+import { recentRain } from './rain-cache.mjs';
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});
 export default {
  async fetch(request,env,ctx){
@@ -9,7 +10,7 @@ export default {
    try{
     const city=url.searchParams.get('city')||'bergen';
     if(!Object.hasOwn(CITY_STATIONS,city))return json({error:'Ukjent by'},400);
-    const data=await fetchRecent(env.FROST_CLIENT_ID,new Date(),fetch,city);
+    const data=await recentRain({city,clientId:env.FROST_CLIENT_ID,origin:url.origin,cache:globalThis.caches?.default});
     return json(data);
    }catch{return json({error:'Nye målinger kunne ikke hentes. Viser sist lagrede målinger.'},503)}
   }

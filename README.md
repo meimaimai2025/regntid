@@ -89,3 +89,7 @@ Valljord was chosen over more distant Steigen for the 2022 gap. Reipa covered on
 ## Hamar-området · Kise*
 
 Kise på Hedmark (MET SN12550 / NOAA NOE00109984), fra 1957. `python scripts/import-hamar.py --download` bygger serien fra offentlige døgnarkiver. Kise beholdes på alle gyldige døgn; bare 24 manglende døgn i normalperioden 1991–2020 fylles fra Vea (NOE00133398). Daglig kilde og verdi ligger i `HAMAR_DATA.daily.supplements`, CSV viser kilde per måned. Normalperioden har 10 958 døgn; 2016–2025 er komplett fra Kise alene. Eldre hull beholdes som ukjent. Målingene representerer Hamar-området, ikke sentrum, og serien er ikke homogenisert. Nye døgn hentes fra MET Frost på Kise.
+
+## Delt timecache for MET
+
+`src/rain-cache.mjs` gjenbruker vellykkede målinger i 60 minutter fra `fetchedAt`, per stasjon og år. Sites bruker Cloudflare Cache API (per datasenter), med minnecache og sammenslåing av samtidige kall i samme Worker-instans. Flere datasentre kan gjøre hver sin førstegangshenting; dette er ikke en global én-gang-garanti. Bare værdata lagres, og innloggingskontrollen beholdes. Feil lagres ikke, byer blandes ikke, og ekstra URL-parametere omgår ikke cachen. Oppdateringsknappene respekterer samme levetid. Netlify bruker også Cache API og durable CDN-cache med variasjon per `city`. Ved cachefeil virker vanlig MET-henting fortsatt.
