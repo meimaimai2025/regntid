@@ -12,7 +12,6 @@ function labels(){
  document.querySelector('header>span').textContent=uiName.toUpperCase()+' / HISTORISKE MØNSTRE';
  document.querySelector('.place').textContent=uiName;
  const aside=document.querySelectorAll('.aside-bottom p');aside[0].textContent=city.coordinates;aside[1].textContent='Nedbørhistorikk fra '+first.slice(0,4)+'. Hva kommer etter regnet?';
- const download=document.querySelector('header a');download.href=city.id+'_monthly.csv';
  document.querySelector('.annual-freshness').textContent='Siste komplette måned: '+month(last)+'. Årsoversikten bruker bare komplette måneder; siste døgn vises separat.';
  document.querySelector('#history h2').textContent='Våte og tørre perioder, '+first.slice(0,4)+'–'+last.slice(0,4);
  document.querySelector('footer span').textContent=city.name+' · Månedsdata til '+month(last);
