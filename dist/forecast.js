@@ -29,6 +29,6 @@ function render(){
 ['forecastAlignment','forecastScenario','forecastAnomaly','forecastThreshold'].forEach(id=>$(id).addEventListener('change',render));
 $('forecastAnomaly').addEventListener('input',()=>{$('forecastAnomalyValue').textContent=signed(Number($('forecastAnomaly').value)/100)});
 $('forecastThreshold').addEventListener('input',()=>{$('forecastThresholdValue').textContent=$('forecastThreshold').value+' %'});
-$('forecastDownload').onclick=()=>{if(!latest?.available)return;const body=JSON.stringify(latest,null,2),blob=new Blob([body],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='regnrytme-'+(window.RAIN_CITY?.id||'bergen')+'-prognose-'+latest.asOf+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$('forecastDownload').onclick=()=>{if(!latest?.available)return;const body=JSON.stringify(latest,null,2),blob=new Blob([body],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='regntid-'+(window.RAIN_CITY?.id||'bergen')+'-prognose-'+latest.asOf+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 window.addEventListener('frost-updated',render);window.addEventListener('pageshow',()=>{if(today()!==lastDay)render()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&today()!==lastDay)render()});render();
 })();

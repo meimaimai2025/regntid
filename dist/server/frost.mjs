@@ -30,7 +30,7 @@ export async function fetchRecent(clientId,now=new Date(),fetcher=fetch,city='be
  const year=now.getUTCFullYear();
  const url=new URL('https://frost.met.no/observations/v0.jsonld');
  for(const [k,v]of Object.entries({sources:station,referencetime:`${year}-01-01/${nextDate(now.toISOString().slice(0,10))}`,elements:ELEMENT,timeoffsets:'PT6H',levels:'default',qualities:'0,1,2,3,4'}))url.searchParams.set(k,v);
- const response=await fetcher(url,{headers:{Authorization:'Basic '+btoa(clientId+':'),'User-Agent':'Regnrytme Bergen (weather observations)'},signal:AbortSignal.timeout(15000)});
+ const response=await fetcher(url,{headers:{Authorization:'Basic '+btoa(clientId+':'),'User-Agent':'Regntid Bergen (weather observations)'},signal:AbortSignal.timeout(15000)});
  if(!response.ok)throw new Error('Frost is temporarily unavailable');
  const parsed=parseFrost(await response.json(),now,station+':0');
  const map=new Map(parsed.dailyTenths),start=`${year}-01-01`;

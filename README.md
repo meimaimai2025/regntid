@@ -1,4 +1,4 @@
-# Regntid / Regnrytme – Bergen
+# Regntid – Bergen
 
 Nedbøroversikt med våt- og tørrekorder, års- og månedstall og historiske mønstre.
 

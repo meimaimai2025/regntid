@@ -4,3 +4,6 @@
 /* Each menu item opens one page; without JavaScript all content remains available. */
 .mobile-section-menu{display:none}main{min-height:100vh}main>section[id]:not(#latest){padding-top:28px}aside{overflow-y:auto}aside nav{flex-shrink:0}h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
 @media(max-width:900px){aside{display:block}aside nav{display:none}.mobile-section-menu{display:block;padding-top:18px}.mobile-section-menu label{margin:0}.mobile-section-menu select{margin-top:6px}main>section[id]:not(#latest){padding-top:22px}}
+
+/* Regntid: a rain drop with a clock face, drawn for the dark sidebar. */
+.brand{gap:9px;letter-spacing:-1.3px;font-size:28px}.brandmark{display:block;flex:0 0 48px;width:48px;height:48px}.brandmark svg{display:block;width:48px;height:48px;overflow:visible}.brandname{white-space:nowrap;line-height:1.1}.brandname>span{color:var(--mint)}@media(min-width:901px) and (max-width:1150px){.brand{font-size:25px;gap:6px}.brandmark,.brandmark svg{width:42px;height:42px}.brandmark{flex-basis:42px}}@media(max-width:900px){.brand{font-size:27px}.brandmark,.brandmark svg{width:42px;height:42px}.brandmark{flex-basis:42px}}

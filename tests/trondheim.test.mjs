@@ -20,7 +20,7 @@ test('Trondheim composite has complete normal coverage and documented station pe
 });
 test('Trondheim page and API are routed to Voll',async()=>{
  const html=await (await worker.fetch(new Request('https://example.test/?city=trondheim'),{},{})).text();
- assert.ok(html.includes('<title>Regnrytme · Trondheim</title>'));
+ assert.ok(html.includes('<title>Regntid · Trondheim</title>'));
  assert.ok(html.includes('<option value="trondheim" selected>Trondheim* · Voll</option>'));
  assert.ok(html.includes('Historiske rekorder slått i 2026 · Trondheim* (sammensatt serie)'));
  await fetchRecent('test',new Date('2026-10-30T12:00:00Z'),async(url)=>{

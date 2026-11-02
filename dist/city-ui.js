@@ -7,7 +7,7 @@ $('rainCity').onchange=()=>{const url=new URL(location.href);if($('rainCity').va
 const month=k=>new Intl.DateTimeFormat('nb-NO',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(k+'-15T12:00:00Z'));
 function labels(){
  const first=window.RAIN_DATA[0].month,last=window.RAIN_DATA.at(-1).month;
- document.title='Regnrytme · '+uiName;
+ document.title='Regntid · '+uiName;
  $('cityStation').textContent=city.station+' · '+city.stationId+' · Månedsdata '+month(first)+'–'+month(last)+'. '+(city.compositeNote?city.compositeNote:other?'Én stasjon. Historikk fra NOAA GHCN-Daily; nye døgn hentes fra MET Frost.':'Historisk Bergen-serie; nyere målinger fra Florida.');
  document.querySelector('header>span').textContent=uiName.toUpperCase()+' / HISTORISKE MØNSTRE';
  document.querySelector('.place').textContent=uiName;

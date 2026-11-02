@@ -29,7 +29,7 @@ for(const [id,property] of [['yearLeaders','innerHTML'],['yearSpotlight','textCo
   html=html.replace(pattern,(_m,open,_tag,close)=>open+start+value+end+close);
  }
 }
-if(city!=='bergen')html=html.replace('<title>Regnrytme · Bergen</title>','<title>Regnrytme · '+({kristiansand:'Kristiansand',tromso:'Tromsø',bodo:'Bodø',trondheim:'Trondheim',oslo:'Oslo',stavanger:'Stavanger'}[city])+'</title>').replace('<option value="'+city+'">','<option value="'+city+'" selected>');
+if(city!=='bergen')html=html.replace('<title>Regntid · Bergen</title>','<title>Regntid · '+({kristiansand:'Kristiansand',tromso:'Tromsø',bodo:'Bodø',trondheim:'Trondheim',oslo:'Oslo',stavanger:'Stavanger'}[city])+'</title>').replace('<option value="'+city+'">','<option value="'+city+'" selected>');
 fs.writeFileSync(city!=='bergen'?path.join(root,'dist',city+'.html'):filename,html);
 console.log('Saved visible record snapshot: '+document.getElementById('yearBrokenCount').textContent);
 
