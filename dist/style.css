@@ -7,3 +7,6 @@
 
 /* Regntid: a rain drop with a clock face, drawn for the dark sidebar. */
 .brand{gap:9px;letter-spacing:-1.3px;font-size:28px}.brandmark{display:block;flex:0 0 48px;width:48px;height:48px}.brandmark svg{display:block;width:48px;height:48px;overflow:visible}.brandname{white-space:nowrap;line-height:1.1}.brandname>span{color:var(--mint)}@media(min-width:901px) and (max-width:1150px){.brand{font-size:25px;gap:6px}.brandmark,.brandmark svg{width:42px;height:42px}.brandmark{flex-basis:42px}}@media(max-width:900px){.brand{font-size:27px}.brandmark,.brandmark svg{width:42px;height:42px}.brandmark{flex-basis:42px}}
+
+/* Regntid.no wordmark: white and blue, sized to stay inside the sidebar. */
+.brand{font-size:25px;gap:7px;letter-spacing:-1px}.brandname{color:#fff}.brandname>span{color:#70b9ff}.brandmark{flex-basis:42px;width:42px;height:42px}.brandmark svg{width:42px;height:42px}@media(min-width:901px) and (max-width:1150px){.brand{font-size:21px;gap:5px}.brandmark{flex-basis:36px;width:36px;height:36px}.brandmark svg{width:36px;height:36px}}

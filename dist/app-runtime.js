@@ -1,6 +1,6 @@
 (()=>{
  'use strict';
- const VERSION='1',HOUR=3600000;
+ const VERSION='2',HOUR=3600000;
  const scripts=new Map(),factories=new Map(),initialized=new Set(),scopes=[];
  const archives=window.RAIN_CITY_DATA={},recent=new Map(),pendingRecent=new Map();
  const pageIds=['annual','comparison','seasons','records','forecast','lab','history','method'];

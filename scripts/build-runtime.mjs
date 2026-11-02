@@ -16,5 +16,5 @@ const history=read('app.js').split('\n').find(l=>l.startsWith('function renderHi
 write('view-history.js',`window.Regntid.register('history',function(window,document){const $=id=>document.getElementById(id),M=window.RainModel;let model=M.createModel(window.RAIN_DATA);const anomaly=x=>(x>=0?'+':'−')+Math.abs(x).toFixed(0)+' %';${history}\nrenderHistory();window.addEventListener('frost-updated',()=>{model=M.createModel(window.RAIN_DATA);renderHistory()});});\n`);
 let html=read('index.html');
 html=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
-html=html.replace('</head>','<script src="city-registry.js?v=1" defer></script><script src="app-runtime.js?v=1" defer></script></head>');
+html=html.replace('</head>','<script src="city-registry.js?v=2" defer></script><script src="app-runtime.js?v=2" defer></script></head>');
 write('index.html',html);
