@@ -1,4 +1,4 @@
-export const CITY_STATIONS={bergen:'SN50540',oslo:'SN18700',stavanger:'SN44800',trondheim:'SN68860',kristiansand:'SN39040',tromso:'SN90450',bodo:'SN82290'};
+export const CITY_STATIONS={bergen:'SN50540',oslo:'SN18700',stavanger:'SN44800',trondheim:'SN68860',kristiansand:'SN39040',tromso:'SN90450',bodo:'SN82290',hamar:'SN12550'};
 export const STATION='SN50540:0';
 export const ELEMENT='sum(precipitation_amount P1D)';
 export const nextDate=(d,n=1)=>new Date(Date.parse(d+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
