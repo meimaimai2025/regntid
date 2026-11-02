@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import './build-runtime.mjs';
 import './prerender-records.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const publish=path.join(root,'.netlify/publish');

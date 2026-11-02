@@ -93,3 +93,9 @@ Kise på Hedmark (MET SN12550 / NOAA NOE00109984), fra 1957. `python scripts/imp
 ## Delt timecache for MET
 
 `src/rain-cache.mjs` gjenbruker vellykkede målinger i 60 minutter fra `fetchedAt`, per stasjon og år. Sites bruker Cloudflare Cache API (per datasenter), med minnecache og sammenslåing av samtidige kall i samme Worker-instans. Flere datasentre kan gjøre hver sin førstegangshenting; dette er ikke en global én-gang-garanti. Bare værdata lagres, og innloggingskontrollen beholdes. Feil lagres ikke, byer blandes ikke, og ekstra URL-parametere omgår ikke cachen. Oppdateringsknappene respekterer samme levetid. Netlify bruker også Cache API og durable CDN-cache med variasjon per `city`. Ved cachefeil virker vanlig MET-henting fortsatt.
+
+## Raskt bybytte og behovsstyrt lasting
+
+`app-runtime.js` laster metadata først, deretter bare valgt bys døgn- og månedsarkiv. Bybytte bruker History API og beholder data og lastede skript i minnet. `build-runtime.mjs` lager separate visningsfabrikker fra de eksisterende UI-filene, slik at prognoser, rekorder og sammenligning startes først når menyvalget åpnes. Skjulte visninger utsetter nye måleoppdateringer til de blir synlige; gamle lyttere ryddes ved bybytte. Versjonerte forespørsler beskytter mot sene svar fra tidligere byvalg. MET-responser deles av sammenligning og valgt by og gjenbrukes i en time i minne/sessionStorage (kontrollert mot stasjon og faktisk `fetchedAt`). Valgte sammenligningsbyer laster arkiver ved behov.
+
+Målt ukomprimert JavaScript for første Bergen/årsvisning: 437 839 byte mot 5 313 412 før (omtrent 92 % mindre; inkluderer Bergen-historikk og nødvendige modeller, ikke CSS/HTML eller MET-respons). Faktisk overført datamengde påvirkes av komprimering og nettlesercache. Forhåndsvisning bruker `npm run dev`; standardport 8767, og CLI-flagg `--host`/`--port` støttes.

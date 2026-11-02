@@ -1,6 +1,6 @@
 (()=>{
 const $=id=>document.getElementById(id),model=window.CityComparison;
-const cities=Object.values(window.RAIN_CITIES).filter(c=>window.RAIN_CITY_DATA[c.id]?.daily).map(c=>({...c,name:c.displayName||c.name,station:c.station+' · '+c.stationId,...window.RAIN_CITY_DATA[c.id]}));
+const cities=Object.values(window.RAIN_CITIES).filter(c=>window.Regntid||window.RAIN_CITY_DATA[c.id]?.daily).map(c=>({...c,name:c.displayName||c.name,station:c.station+' · '+c.stationId,...window.RAIN_CITY_DATA[c.id]}));
 let selected=model.defaultSelection(cities,window.RAIN_CITY.id),baseId=window.RAIN_CITY.id;
 const pending=new Map(),state=new Map(),fmt=n=>Number.isFinite(n)?n.toLocaleString('nb-NO',{maximumFractionDigits:1}):'—';
 const escape=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -21,8 +21,9 @@ function render(){
  $('comparisonBase').innerHTML=active.map(c=>'<option value="'+escape(c.id)+'">'+escape(c.name)+'</option>').join('');$('comparisonBase').value=baseId;$('comparisonBase').disabled=!active.length;
  const loading=active.filter(c=>pending.has(c.id)),failed=active.filter(c=>state.get(c.id)==='failed');
  $('comparisonRefresh').disabled=!active.length||loading.length>0;
- $('comparisonStatus').textContent=!active.length?'':(loading.length?'Henter MET Frost for '+loading.map(c=>c.name).join(', ')+' … ':failed.length?'Kunne ikke oppdatere '+failed.map(c=>c.name).join(', ')+'. Lagrede målinger beholdes. ':active.every(c=>state.get(c.id)==='ok')?'Oppdatert fra MET Frost. ':'Viser lagrede målinger. ')+'Siste måledato: '+active.map(c=>c.name+' '+c.daily.last).join(' · ');
+ $('comparisonStatus').textContent=!active.length?'':(loading.length?'Henter MET Frost for '+loading.map(c=>c.name).join(', ')+' … ':failed.length?'Kunne ikke oppdatere '+failed.map(c=>c.name).join(', ')+'. Lagrede målinger beholdes. ':active.every(c=>state.get(c.id)==='ok')?'Oppdatert fra MET Frost. ':'Viser lagrede målinger. ')+'Siste måledato: '+active.map(c=>c.name+' '+(c.daily?.last||'ikke lastet')).join(' · ');
  if(!active.length){$('comparisonContent').innerHTML='<div class="panel comparison-empty"><h3>Velg byer for å sammenligne</h3><p>Kryss av minst to byer, eller bruk «Tilbakestill til standardvalg».</p></div>';return}
+ if(active.some(c=>!c.daily)){ $('comparisonContent').innerHTML='<p class="small muted">Laster historikk for de valgte byene …</p>';return}
  const r=model.compare(active),base=r.cities.find(c=>c.id===baseId);
  const rows=(group,items)=>items.map(([key,label,unit])=>{const b=base[group][key];return '<tr><th scope="row">'+label+'</th>'+r.cities.map(c=>{const v=c[group][key],delta=v-b;return '<td><strong>'+fmt(v)+(Number.isFinite(v)?' '+unit:'')+'</strong><small>'+(c.id===base.id?'Referanse':Number.isFinite(v)&&Number.isFinite(b)?(delta>0?'+':'')+fmt(delta)+' '+unit+' mot '+escape(base.name):'Utilstrekkelige data')+'</small></td>'}).join('')+'</tr>'}).join('');
  const table=(group,items)=>'<div class="table-wrap" tabindex="0" role="region" aria-label="'+(group==='current'?'Målinger i 2026':'Normalår')+' for valgte byer"><table><thead><tr><th scope="col">Mål</th>'+r.cities.map(c=>'<th scope="col">'+escape(c.name)+'<small>'+escape(c.station)+'</small></th>').join('')+'</tr></thead><tbody>'+rows(group,items)+'</tbody></table></div>';
@@ -32,9 +33,9 @@ function refreshCity(c,force){
  if(pending.has(c.id))return pending.get(c.id);
  if(!force&&state.has(c.id))return Promise.resolve();
  const task=(async()=>{
-  try{const response=await fetch('/api/recent-rain?city='+encodeURIComponent(c.id),{cache:'no-store'});if(!response.ok)throw Error();const data=await response.json();if(data.station!==c.daily.station||!data.dailyTenths?.length||data.last<c.daily.last)throw Error();const map=new Map(c.daily.dailyTenths.filter(([d])=>d<data.first));for(const row of data.dailyTenths)map.set(...row);c.daily={...c.daily,...data,dailyTenths:[...map].sort((a,b)=>a[0].localeCompare(b[0]))};state.set(c.id,'ok')}
+  try{if(window.Regntid){const archive=await window.Regntid.loadCity(c.id);if(window.regntidActive&&!window.regntidActive())return;c.monthly=archive.monthly;c.daily=archive.daily;}const response=window.Regntid?{ok:true,json:()=>window.Regntid.getRecent(c.id)}:await fetch('/api/recent-rain?city='+encodeURIComponent(c.id),{cache:'no-store'});if(!response.ok)throw Error();const data=await response.json();if(window.regntidActive&&!window.regntidActive())return;if(data.station!==c.daily.station||!data.dailyTenths?.length||data.last<c.daily.last)throw Error();const map=new Map(c.daily.dailyTenths.filter(([d])=>d<data.first));for(const row of data.dailyTenths)map.set(...row);c.daily={...c.daily,...data,dailyTenths:[...map].sort((a,b)=>a[0].localeCompare(b[0]))};state.set(c.id,'ok')}
   catch{state.set(c.id,'failed')}
-  finally{pending.delete(c.id);render()}
+  finally{pending.delete(c.id);if(!window.regntidActive||window.regntidActive())render()}
  })();pending.set(c.id,task);return task;
 }
 async function refresh(list=chosen(),force=true){const jobs=list.map(c=>refreshCity(c,force));render();await Promise.all(jobs)}

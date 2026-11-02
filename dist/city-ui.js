@@ -3,7 +3,7 @@ const city=window.RAIN_CITY,$=id=>document.getElementById(id),other=city.id!=='b
 $('rainCity').querySelector('[value=bergen]').textContent='Bergen · Florida';
 $('rainCity').querySelector('[value=oslo]').textContent='Oslo · Blindern';
 $('rainCity').value=city.id;
-$('rainCity').onchange=()=>{const url=new URL(location.href);if($('rainCity').value==='bergen')url.searchParams.delete('city');else url.searchParams.set('city',$('rainCity').value);location.href=url.href};
+$('rainCity').onchange=()=>{if(window.Regntid){window.Regntid.switchCity($('rainCity').value);return;}const url=new URL(location.href);if($('rainCity').value==='bergen')url.searchParams.delete('city');else url.searchParams.set('city',$('rainCity').value);location.href=url.href};
 const month=k=>new Intl.DateTimeFormat('nb-NO',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(k+'-15T12:00:00Z'));
 function labels(){
  const first=window.RAIN_DATA[0].month,last=window.RAIN_DATA.at(-1).month;
