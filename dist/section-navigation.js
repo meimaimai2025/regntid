@@ -32,11 +32,11 @@
   let target;try{target=document.getElementById(decodeURIComponent(hash.slice(1)))}catch{}
   if(!pages.some(p=>p===target||p.contains(target)))return;
   event.preventDefault();
-  if(location.hash!==hash)history.pushState(null,'',hash);
+  if(location.hash!==hash)window.history.pushState(null,'',hash);
   show(true);
   if(!links.includes(link)&&target)target.scrollIntoView({block:'start'});
  });
- if(select)select.addEventListener('change',()=>{history.pushState(null,'','#'+select.value);show(true)});
+ if(select)select.addEventListener('change',()=>{window.history.pushState(null,'','#'+select.value);show(true)});
  window.addEventListener('hashchange',()=>show(true));
  window.addEventListener('popstate',()=>show(true));
  show();
