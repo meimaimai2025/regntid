@@ -1,11 +1,11 @@
 (()=>{
  'use strict';
- const VERSION='3',HOUR=3600000;
+ const VERSION='5',HOUR=3600000;
  const scripts=new Map(),factories=new Map(),initialized=new Set(),scopes=[];
  const archives=window.RAIN_CITY_DATA={},recent=new Map(),pendingRecent=new Map();
  const pageIds=['annual','comparison','seasons','records','forecast','lab','history','method'];
  const models={annual:['model.js'],comparison:['comparison-model.js'],seasons:['seasons-model.js'],records:['records-model.js','calendar-records-model.js','dry-records-model.js'],forecast:['forecast-model.js'],lab:['model.js'],history:['model.js'],method:[],core:[]};
- const template=document.querySelector('main').innerHTML;
+ const template=document.querySelector('main').innerHTML.replace(/(<!--snapshot:[^>]+-->)[\s\S]*?(<!--\/snapshot:[^>]+-->)/g,'$1$2');
  let cityId=null,section='annual',generation=0,navGeneration=0,citySequence=0;
  function script(file){
   if(scripts.has(file))return scripts.get(file);
@@ -55,19 +55,24 @@
   for(const a of document.querySelectorAll('aside nav a')){const active=a.getAttribute('href')==='#'+wanted;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}
   document.getElementById('sectionMenu').value=wanted;
   status('Laster visning …');
-  try{await init(wanted,expected);if(nav!==navGeneration||expected!==generation)return;scopes.filter(s=>s.name===wanted).forEach(s=>s.resume());status('');if(scroll){window.scrollTo({top:0,behavior:'instant'});const h=document.getElementById(wanted).querySelector('h1,h2');if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true})}}}
-  catch(error){console.error('View initialization failed',error);if(nav===navGeneration)status('Visningen kunne ikke lastes. Velg den på nytt for å prøve igjen.')}
+  try{await init(wanted,expected);if(nav!==navGeneration||expected!==generation)return;scopes.filter(s=>s.name===wanted).forEach(s=>s.resume());document.getElementById(wanted).hidden=false;status('');if(scroll){window.scrollTo({top:0,behavior:'instant'});const h=document.getElementById(wanted).querySelector('h1,h2');if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true})}}}
+  catch(error){console.error('View initialization failed',error);if(nav===navGeneration)status('Visningen kunne ikke lastes: '+error.message+'. Velg den på nytt for å prøve igjen.')}
  }
  async function switchCity(id,push=true){
   if(!Object.hasOwn(window.RAIN_CITIES,id))id='bergen';
   if(id===cityId){++citySequence;await showSection();return}
-  const expected=++citySequence;status('Laster '+window.RAIN_CITIES[id].name+' …');
+  const expected=++citySequence;
+  // Invalidate pending view work before awaiting the next city archive.
+  ++navGeneration;for(const key of pageIds)document.getElementById(key).hidden=true;document.getElementById('latest').hidden=true;
+  status('Laster '+window.RAIN_CITIES[id].name+' …');
   try{
    const data=await loadCity(id);if(expected!==citySequence)return;
    ++generation;const mounted=generation;
    scopes.splice(0).forEach(s=>s.dispose());initialized.clear();cityId=id;
    window.RAIN_CITY=window.RAIN_CITIES[id];window.RAIN_DATA=data.monthly;window.RECORD_DATA=data.daily;
    document.querySelector('main').innerHTML=template;
+   const recordTitle=document.getElementById('yearBrokenTitle');if(recordTitle)recordTitle.textContent='Historiske rekorder · '+(window.RAIN_CITY.seriesName||window.RAIN_CITY.station);
+   const recordCount=document.getElementById('yearBrokenCount');if(recordCount)recordCount.textContent='Laster rekorder for valgt by …';
    for(const key of pageIds)document.getElementById(key).hidden=true;document.getElementById('latest').hidden=true;
    document.getElementById('sectionMenu').onchange=event=>{window.history.pushState(null,'','#'+event.target.value);showSection(true)};
    if(push){const url=new URL(location.href);if(id==='bergen')url.searchParams.delete('city');else url.searchParams.set('city',id);window.history.pushState(null,'',url)}

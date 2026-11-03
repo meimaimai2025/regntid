@@ -5,6 +5,7 @@ function setup(){
  const listeners={},nodes=new Map(),requested=[],initCounts={},captured=[],storage=new Map(),delayed=new Map();let context,fetches=0;
  class Element{constructor(id){this.id=id;this.hidden=false;this.value='';this.textContent='';this.innerHTML='';this.classList={toggle(){}}}append(el){if(el.id)nodes.set(el.id,el)}setAttribute(){}removeAttribute(){}querySelector(){return null}contains(el){return this===el}focus(){}remove(){}}
  for(const id of ['main','city-picker','latest','annual','comparison','seasons','records','forecast','lab','history','method','sectionMenu','rainCity'])nodes.set(id,new Element(id));
+ nodes.get('main').innerHTML='<h3><!--snapshot:yearBrokenTitle-->OLD CITY RECORD<!--/snapshot:yearBrokenTitle--></h3>';
  const location={href:'https://example.test/',search:'',hash:''};
  function move(value){const u=new URL(value,location.href);Object.assign(location,{href:u.href,search:u.search,hash:u.hash})}
  const history={pushState:(_a,_b,value)=>move(value)};
@@ -39,3 +40,17 @@ test('generated Bergen archive runs independently and initial HTML has no eager 
  const window={RAIN_DATA:'unchanged',RECORD_DATA:'unchanged'};vm.runInNewContext(fs.readFileSync('dist/bergen-data.js','utf8'),{window});assert.ok(window.BERGEN_DATA.daily.dailyTenths.length>10000);assert.equal(window.RAIN_DATA,'unchanged');assert.equal(window.RECORD_DATA,'unchanged');
  const html=fs.readFileSync('dist/index.html','utf8'),scripts=[...html.matchAll(/<script[^>]*src="([^"?]+)/g)].map(m=>m[1]);assert.deepEqual(scripts,['city-registry.js','app-runtime.js']);
 });
+test('records stay hidden during city and view loading, then belong to the selected city',async()=>{
+ const s=setup();await ready();s.move('#records');s.fire('hashchange');await ready();assert.equal(s.nodes.get('records').hidden,false);
+ const first=s.captured.filter(c=>c.name==='records').at(-1);s.delayed.set('oslo-data.js',null);
+ const pending=s.window.Regntid.switchCity('oslo');await tick();assert.equal(s.nodes.get('records').hidden,true);
+ s.delayed.get('oslo-data.js')();await pending;assert.equal(s.nodes.get('records').hidden,false);assert.equal(s.window.RAIN_CITY.id,'oslo');assert.equal(first.w.regntidActive(),false);assert.equal(s.initCounts.records,2);
+ await s.window.Regntid.switchCity('bergen');assert.equal(s.initCounts.records,3);assert.equal(s.window.RECORD_DATA.station,'SN50540:0');
+});
+test('a delayed records view cannot reveal stale records during a city switch',async()=>{
+ const s=setup();await ready();s.delayed.set('view-records.js',null);s.move('#records');s.fire('hashchange');await ready();assert.equal(s.nodes.get('records').hidden,false);
+ s.delayed.set('oslo-data.js',null);const pending=s.window.Regntid.switchCity('oslo');await tick();s.delayed.get('view-records.js')();await ready();assert.equal(s.nodes.get('records').hidden,true);
+ s.delayed.get('oslo-data.js')();await pending;assert.equal(s.nodes.get('records').hidden,false);assert.equal(s.window.RAIN_CITY.id,'oslo');
+});
+
+test('city template drops old server-rendered record snapshots',async()=>{const s=setup();await ready();await s.window.Regntid.switchCity('oslo');assert.ok(!s.nodes.get('main').innerHTML.includes('OLD CITY RECORD'));});
